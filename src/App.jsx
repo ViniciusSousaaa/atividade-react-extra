@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Accordion from './components/Accordion'
 import Pagination from './components/Pagination'
 import ProgressBar from './components/ProgressBar'
 import Tabs from './components/Tabs'
 import Dropdown from './components/Dropdown'
-import Toast from './components/Toast'
+import ToastDemo from './components/ToastDemo'
+import { useToast } from './context/ToastContext'
 
 const faqItems = [
   { title: 'Como faço um pedido?', content: 'Escolha o produto, clique em comprar e siga as etapas do carrinho.' },
@@ -26,6 +27,8 @@ const productTabs = [
 ]
 
 function App() {
+  const showToast = useToast()
+
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE)
   const start = (currentPage - 1) * ITEMS_PER_PAGE
@@ -35,14 +38,6 @@ function App() {
   const [isUploading, setIsUploading] = useState(false)
 
   const [language, setLanguage] = useState('Português')
-
-  const [toast, setToast] = useState(null)
-
-  function showToast(message, type) {
-    setToast({ message, type })
-  }
-
-  const closeToast = useCallback(() => setToast(null), [])
 
   function startUpload() {
     setProgress(0)
@@ -57,12 +52,12 @@ function App() {
         setProgress(progress + 10)
       } else {
         setIsUploading(false)
-        setToast({ message: 'Upload concluído com sucesso!', type: 'success' })
+        showToast('Upload concluído com sucesso!', 'success')
       }
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [isUploading, progress])
+  }, [isUploading, progress, showToast])
 
   const languageOptions = ['Português', 'English', 'Español'].map((lang) => ({
     label: lang,
@@ -119,17 +114,13 @@ function App() {
 
         <section className="card">
           <h2>Notificação Toast</h2>
-          <button onClick={() => showToast('Operação realizada com sucesso!', 'success')}>Sucesso</button>
-          <button onClick={() => showToast('Erro ao salvar os dados.', 'error')}>Erro</button>
-          <button onClick={() => showToast('Você tem uma nova mensagem.', 'info')}>Informação</button>
+          <ToastDemo />
         </section>
       </main>
 
       <footer className="footer">
         <p>Vinicius Sousa - Tópicos avançados em programação</p>
       </footer>
-
-      {toast && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
     </>
   )
 }
