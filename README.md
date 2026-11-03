@@ -13,5 +13,7 @@ Mesma aplicação da atividade principal, com gerenciamento de estado global usa
 
 ## Como rodar
 
+```bash
 npm install
 npm run dev
+```
